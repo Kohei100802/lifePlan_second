@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}ライフイベント | {{ lifeplan.name }} | ライフプランシミュレーター{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">ライフイベント</h1>
+    <div class="btn-group">
+        <a href="{{ url_for('lifeplan.view', id=lifeplan.id) }}" class="btn btn-outline-primary">ライフプラン詳細に戻る</a>
+        <a href="{{ url_for('lifeplan.add_event', id=lifeplan.id) }}" class="btn btn-primary">新規イベント追加</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="card-title mb-0">{{ lifeplan.name }} のライフイベント</h5>
+    </div>
+    <div class="card-body">
+        {% if events %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>年齢</th>
+                            <th>年</th>
+                            <th>イベント</th>
+                            <th>説明</th>
+                            <th>費用</th>
+                            <th>継続</th>
+                            <th>アクション</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.event_year - lifeplan.birth_year }}歳</td>
+                            <td>{{ event.event_year }}年</td>
+                            <td>{{ event.event_type }}</td>
+                            <td>{{ event.description or '-' }}</td>
+                            <td class="{{ 'text-danger' if event.cost > 0 else 'text-success' }}">{{ event.cost }}万円</td>
+                            <td>
+                                {% if event.recurring %}
+                                    <span class="badge bg-info">継続</span>
+                                    {% if event.recurring_end_year %}
+                                        〜{{ event.recurring_end_year }}年
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">一回限り</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('lifeplan.edit_event', id=lifeplan.id, event_id=event.id) }}" class="btn btn-outline-secondary">編集</a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal{{ event.id }}">削除</button>
+                                </div>
+                                
+                                <!-- 削除確認モーダル -->
+                                <div class="modal fade" id="deleteEventModal{{ event.id }}" tabindex="-1" aria-labelledby="deleteEventModalLabel{{ event.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteEventModalLabel{{ event.id }}">ライフイベントの削除</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>「{{ event.event_type }}」（{{ event.event_year }}年）を削除してもよろしいですか？</p>
+                                                <p>この操作は取り消せません。</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                                                <form action="{{ url_for('lifeplan.delete_event', id=lifeplan.id, event_id=event.id) }}" method="post">
+                                                    <button type="submit" class="btn btn-danger">削除</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">まだライフイベントが登録されていません。「新規イベント追加」ボタンから登録できます。</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="card-title mb-0">ライフイベントについて</h5>
+    </div>
+    <div class="card-body">
+        <p>ライフイベントとは、人生の中で発生する主要な出来事を指します。結婚、出産、住宅購入、転職、子供の進学、老後、介護などが含まれます。</p>
+        <p>これらのイベントには通常、大きな費用が伴います。イベントを登録することで、そのタイミングでの支出や収入の変化をシミュレーションに反映できます。</p>
+        
+        <h6 class="mt-3">イベントのタイプ</h6>
+        <ul>
+            <li><strong>一回限り</strong>のイベント - 結婚式、住宅購入など、一度きりの出費</li>
+            <li><strong>継続的</strong>なイベント - 子供の教育費、老後の生活費など、一定期間続く支出</li>
+        </ul>
+        
+        <h6 class="mt-3">費用の入力について</h6>
+        <ul>
+            <li>支出の場合は<strong>正の値</strong>（例: 300万円）</li>
+            <li>収入の場合は<strong>負の値</strong>（例: -500万円）</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

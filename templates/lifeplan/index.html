@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}ライフプラン一覧 | ライフプランシミュレーター{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">ライフプラン一覧</h1>
+    <a href="{{ url_for('lifeplan.create') }}" class="btn btn-primary">新規作成</a>
+</div>
+
+{% if lifeplans %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for plan in lifeplans %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">{{ plan.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>生年:</strong> {{ plan.birth_year }}年<br>
+                            <strong>家族構成:</strong> {{ plan.family_structure or '未設定' }}<br>
+                            <strong>本人年収:</strong> {{ plan.income_self }}万円<br>
+                            <strong>配偶者年収:</strong> {{ plan.income_spouse }}万円<br>
+                            <strong>預貯金:</strong> {{ plan.savings }}万円<br>
+                            <strong>投資資産:</strong> {{ plan.investments }}万円
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">更新日: {{ plan.updated_at.strftime('%Y/%m/%d') }}</small>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('lifeplan.view', id=plan.id) }}" class="btn btn-outline-primary">詳細</a>
+                                <a href="{{ url_for('lifeplan.edit', id=plan.id) }}" class="btn btn-outline-secondary">編集</a>
+                                <a href="{{ url_for('lifeplan.events', id=plan.id) }}" class="btn btn-outline-info">イベント</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <p class="mb-0">まだライフプランが作成されていません。「新規作成」ボタンから作成を始めましょう。</p>
+    </div>
+{% endif %}
+{% endblock %}

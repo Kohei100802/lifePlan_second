@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lifeplan.name }} | ライフプランシミュレーター{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">{{ lifeplan.name }}</h1>
+    <div class="btn-group">
+        <a href="{{ url_for('lifeplan.edit', id=lifeplan.id) }}" class="btn btn-outline-primary">編集</a>
+        <a href="{{ url_for('lifeplan.events', id=lifeplan.id) }}" class="btn btn-outline-info">ライフイベント</a>
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            エクスポート
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('api.export_csv', id=lifeplan.id) }}">CSV形式</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('api.export_json', id=lifeplan.id) }}">JSON形式</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">基本情報</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">生年（西暦）</dt>
+                    <dd class="col-sm-6">{{ lifeplan.birth_year }}年</dd>
+                    
+                    <dt class="col-sm-6">家族構成</dt>
+                    <dd class="col-sm-6">{{ lifeplan.family_structure or '未設定' }}</dd>
+                    
+                    <dt class="col-sm-6">作成日</dt>
+                    <dd class="col-sm-6">{{ lifeplan.created_at.strftime('%Y/%m/%d') }}</dd>
+                    
+                    <dt class="col-sm-6">更新日</dt>
+                    <dd class="col-sm-6">{{ lifeplan.updated_at.strftime('%Y/%m/%d') }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">収入・資産情報</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">本人年収</dt>
+                    <dd class="col-sm-6">{{ lifeplan.income_self }}万円</dd>
+                    
+                    <dt class="col-sm-6">配偶者年収</dt>
+                    <dd class="col-sm-6">{{ lifeplan.income_spouse }}万円</dd>
+                    
+                    <dt class="col-sm-6">昇給率</dt>
+                    <dd class="col-sm-6">{{ (lifeplan.income_increase_rate * 100)|round(1) }}%</dd>
+                    
+                    <dt class="col-sm-6">預貯金</dt>
+                    <dd class="col-sm-6">{{ lifeplan.savings }}万円</dd>
+                    
+                    <dt class="col-sm-6">投資資産</dt>
+                    <dd class="col-sm-6">{{ lifeplan.investments }}万円</dd>
+                    
+                    <dt class="col-sm-6">投資収益率</dt>
+                    <dd class="col-sm-6">{{ (lifeplan.investment_return_rate * 100)|round(1) }}%</dd>
+                    
+                    <dt class="col-sm-6">不動産資産</dt>
+                    <dd class="col-sm-6">{{ lifeplan.real_estate }}万円</dd>
+                    
+                    <dt class="col-sm-6">負債</dt>
+                    <dd class="col-sm-6">{{ lifeplan.debt }}万円</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">支出情報</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">住居費</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_housing }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">生活費</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_living }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">教育費</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_education }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">保険料</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_insurance }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">ローン返済</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_loan }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">娯楽費</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_entertainment }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">交通費</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_transportation }}万円/年</dd>
+                    
+                    <dt class="col-sm-6">合計支出</dt>
+                    <dd class="col-sm-6">{{ lifeplan.expense_housing + lifeplan.expense_living + lifeplan.expense_education + lifeplan.expense_insurance + lifeplan.expense_loan + lifeplan.expense_entertainment + lifeplan.expense_transportation }}万円/年</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">ライフイベント</h5>
+                <a href="{{ url_for('lifeplan.events', id=lifeplan.id) }}" class="btn btn-sm btn-light">詳細/編集</a>
+            </div>
+            <div class="card-body">
+                {% if events %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>イベント</th>
+                                    <th>年</th>
+                                    <th>年齢</th>
+                                    <th>説明</th>
+                                    <th>費用</th>
+                                    <th>継続</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in events %}
+                                <tr>
+                                    <td>{{ event.event_type }}</td>
+                                    <td>{{ event.event_year }}年</td>
+                                    <td>{{ event.event_year - lifeplan.birth_year }}歳</td>
+                                    <td>{{ event.description or '' }}</td>
+                                    <td class="{{ 'text-danger' if event.cost > 0 else 'text-success' }}">{{ event.cost }}万円</td>
+                                    <td>
+                                        {% if event.recurring %}
+                                            <span class="badge bg-info">継続</span>
+                                            {% if event.recurring_end_year %}
+                                                〜{{ event.recurring_end_year }}年
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">まだライフイベントが登録されていません。「ライフイベント」ボタンから登録できます。</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">シミュレーション結果</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <canvas id="balanceChart" width="400" height="200"></canvas>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>年</th>
+                                <th>年齢</th>
+                                <th>収入</th>
+                                <th>支出</th>
+                                <th>貯蓄残高</th>
+                                <th>投資残高</th>
+                                <th>年間収支</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in results %}
+                            <tr class="{{ 'table-danger' if r.balance < 0 else '' }}">
+                                <td>{{ r.year }}年</td>
+                                <td>{{ r.age }}歳</td>
+                                <td>{{ r.income }}万円</td>
+                                <td>{{ r.expenses }}万円</td>
+                                <td>{{ r.savings }}万円</td>
+                                <td>{{ r.investments }}万円</td>
+                                <td class="{{ 'text-danger' if r.balance < 0 else 'text-success' }}">{{ r.balance }}万円</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // チャートデータをJSONから取得
+    const chartData = {{ chart_data|safe }};
+    
+    // 貯蓄残高推移グラフ
+    const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+    new Chart(balanceCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.years,
+            datasets: [
+                {
+                    label: '貯蓄残高',
+                    data: chartData.savings,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: '年間収入',
+                    data: chartData.income,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: '年間支出',
+                    data: chartData.expenses,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            stacked: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '貯蓄残高と収支の推移'
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: '貯蓄残高（万円）'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: '収入・支出（万円）'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '年'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

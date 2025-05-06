@@ -1,0 +1,13 @@
+Flask==2.2.3
+Flask-SQLAlchemy==3.0.3
+Flask-Login==0.6.2
+Flask-WTF==1.1.1
+Flask-Migrate==4.0.4
+Flask-Cors==3.0.10
+WTForms==3.0.1
+email-validator==2.0.0
+python-dotenv==1.0.0
+werkzeug==2.2.3
+numpy==1.26.4
+pandas==2.0.1
+pyngrok==6.0.0

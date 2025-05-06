@@ -1,0 +1,122 @@
+/* レスポンシブデザイン */
+
+/* スマートフォン (576px未満) */
+@media (max-width: 575.98px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    /* テーブルフォント縮小 */
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    /* チャートの高さ調整 */
+    .chart-container {
+        height: 40vh;
+    }
+}
+
+/* タブレット (768px未満) */
+@media (max-width: 767.98px) {
+    /* カード間の余白調整 */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* ボタングループのサイズ調整 */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+        border-radius: 0.25rem !important;
+    }
+    
+    /* フォームレイアウト調整 */
+    .col-form-label {
+        padding-bottom: 0;
+    }
+}
+
+/* 大きめのタブレット (992px未満) */
+@media (max-width: 991.98px) {
+    /* カード内の項目を縦並びに */
+    .card .row [class*="col-"] {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* ナビゲーションバーの調整 */
+    .navbar-nav {
+        padding-top: 0.5rem;
+    }
+}
+
+/* 小さいデスクトップ (1200px未満) */
+@media (max-width: 1199.98px) {
+    /* データテーブルの調整 */
+    .table-responsive .table {
+        min-width: 800px;
+    }
+}
+
+/* iPhoneなどの小さい画面向け特別調整 */
+@media (max-width: 320px) {
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* 画面の向き: 横向き */
+@media (orientation: landscape) and (max-height: 576px) {
+    .chart-container {
+        height: 60vh;
+    }
+    
+    .jumbotron {
+        padding: 1rem;
+    }
+}

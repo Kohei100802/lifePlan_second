@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}ダッシュボード | ライフプランシミュレーター{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">ダッシュボード</h1>
+        <p class="lead">{{ current_user.username }}さん、こんにちは！</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="card-title mb-0">あなたのライフプラン</h5>
+                <a href="{{ url_for('lifeplan.create') }}" class="btn btn-sm btn-primary">新規作成</a>
+            </div>
+            <div class="card-body">
+                {% if lifeplans %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>プラン名</th>
+                                    <th>作成日</th>
+                                    <th>更新日</th>
+                                    <th>アクション</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan in lifeplans %}
+                                <tr>
+                                    <td>{{ plan.name }}</td>
+                                    <td>{{ plan.created_at.strftime('%Y/%m/%d') }}</td>
+                                    <td>{{ plan.updated_at.strftime('%Y/%m/%d') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('lifeplan.view', id=plan.id) }}" class="btn btn-outline-primary">表示</a>
+                                            <a href="{{ url_for('lifeplan.edit', id=plan.id) }}" class="btn btn-outline-secondary">編集</a>
+                                            <a href="{{ url_for('lifeplan.events', id=plan.id) }}" class="btn btn-outline-info">イベント</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">まだライフプランが作成されていません。「新規作成」ボタンから作成を始めましょう。</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">クイックリンク</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('lifeplan.create') }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">新規ライフプラン作成</h5>
+                        </div>
+                        <p class="mb-1">新しいライフプランを作成します</p>
+                    </a>
+                    {% if lifeplans %}
+                    <a href="{{ url_for('lifeplan.view', id=lifeplans[0].id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">最新プランを表示</h5>
+                        </div>
+                        <p class="mb-1">{{ lifeplans[0].name }}</p>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">ヒント</h5>
+            </div>
+            <div class="card-body">
+                <p>ライフプランシミュレーターの使い方：</p>
+                <ul>
+                    <li>基本情報を入力して新規ライフプランを作成</li>
+                    <li>収入・支出・資産情報を詳細に設定</li>
+                    <li>ライフイベント（結婚、出産など）を追加</li>
+                    <li>シミュレーション結果をグラフや表で確認</li>
+                    <li>必要に応じてデータをCSV/JSONでエクスポート</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

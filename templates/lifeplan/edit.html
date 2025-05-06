@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lifeplan.name }}の編集 | ライフプランシミュレーター{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">ライフプランの編集</h1>
+        <p class="lead">「{{ lifeplan.name }}」の情報を編集します。</p>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('lifeplan.edit', id=lifeplan.id) }}">
+    {{ form.hidden_tag() }}
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">基本情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.name.label(class="form-label") }}
+                    {{ form.name(class="form-control") }}
+                    {% for error in form.name.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.birth_year.label(class="form-label") }}
+                    {{ form.birth_year(class="form-control") }}
+                    {% for error in form.birth_year.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.family_structure.label(class="form-label") }}
+                    {{ form.family_structure(class="form-control") }}
+                    {% for error in form.family_structure.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">収入情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    {{ form.income_self.label(class="form-label") }}
+                    {{ form.income_self(class="form-control") }}
+                    {% for error in form.income_self.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                    {{ form.income_spouse.label(class="form-label") }}
+                    {{ form.income_spouse(class="form-control") }}
+                    {% for error in form.income_spouse.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 mb-3">
+                    {{ form.income_increase_rate.label(class="form-label") }}
+                    {{ form.income_increase_rate(class="form-control") }}
+                    <small class="form-text text-muted">年間の昇給率（パーセント）</small>
+                    {% for error in form.income_increase_rate.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">資産情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    {{ form.savings.label(class="form-label") }}
+                    {{ form.savings(class="form-control") }}
+                    {% for error in form.savings.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.investments.label(class="form-label") }}
+                    {{ form.investments(class="form-control") }}
+                    {% for error in form.investments.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.investment_return_rate.label(class="form-label") }}
+                    {{ form.investment_return_rate(class="form-control") }}
+                    <small class="form-text text-muted">年間の投資収益率（パーセント）</small>
+                    {% for error in form.investment_return_rate.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.real_estate.label(class="form-label") }}
+                    {{ form.real_estate(class="form-control") }}
+                    {% for error in form.real_estate.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.debt.label(class="form-label") }}
+                    {{ form.debt(class="form-control") }}
+                    {% for error in form.debt.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="card-title mb-0">支出情報</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_housing.label(class="form-label") }}
+                    {{ form.expense_housing(class="form-control") }}
+                    <small class="form-text text-muted">年間の住居費</small>
+                    {% for error in form.expense_housing.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_living.label(class="form-label") }}
+                    {{ form.expense_living(class="form-control") }}
+                    <small class="form-text text-muted">年間の生活費</small>
+                    {% for error in form.expense_living.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_education.label(class="form-label") }}
+                    {{ form.expense_education(class="form-control") }}
+                    <small class="form-text text-muted">年間の教育費</small>
+                    {% for error in form.expense_education.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_insurance.label(class="form-label") }}
+                    {{ form.expense_insurance(class="form-control") }}
+                    <small class="form-text text-muted">年間の保険料</small>
+                    {% for error in form.expense_insurance.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_loan.label(class="form-label") }}
+                    {{ form.expense_loan(class="form-control") }}
+                    <small class="form-text text-muted">年間のローン返済額</small>
+                    {% for error in form.expense_loan.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_entertainment.label(class="form-label") }}
+                    {{ form.expense_entertainment(class="form-control") }}
+                    <small class="form-text text-muted">年間の娯楽費</small>
+                    {% for error in form.expense_entertainment.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    {{ form.expense_transportation.label(class="form-label") }}
+                    {{ form.expense_transportation(class="form-control") }}
+                    <small class="form-text text-muted">年間の交通費</small>
+                    {% for error in form.expense_transportation.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{{ url_for('lifeplan.view', id=lifeplan.id) }}" class="btn btn-secondary">キャンセル</a>
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+<div class="mt-5">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="card-title mb-0">危険な操作</h5>
+        </div>
+        <div class="card-body">
+            <p>このライフプランを完全に削除します。この操作は取り消せません。</p>
+            <form action="{{ url_for('lifeplan.delete', id=lifeplan.id) }}" method="POST" onsubmit="return confirm('本当に削除しますか？この操作は取り消せません。');">
+                <button type="submit" class="btn btn-danger">ライフプランを削除</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
