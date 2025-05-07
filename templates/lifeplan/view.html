@@ -3,17 +3,22 @@
 {% block title %}{{ lifeplan.name }} | ライフプランシミュレーター{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">{{ lifeplan.name }}</h1>
+{% block header_title %}{{ lifeplan.name }}{% endblock %}
+
+<div class="d-flex justify-content-end align-items-center mb-4">
     <div class="btn-group">
-        <a href="{{ url_for('lifeplan.edit', id=lifeplan.id) }}" class="btn btn-outline-primary">編集</a>
-        <a href="{{ url_for('lifeplan.events', id=lifeplan.id) }}" class="btn btn-outline-info">ライフイベント</a>
+        <a href="{{ url_for('lifeplan.edit', id=lifeplan.id) }}" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i> 編集
+        </a>
+        <a href="{{ url_for('lifeplan.events', id=lifeplan.id) }}" class="btn btn-info">
+            <i class="fas fa-calendar-alt me-1"></i> ライフイベント
+        </a>
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            エクスポート
+            <i class="fas fa-download me-1"></i> エクスポート
         </button>
-        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-            <li><a class="dropdown-item" href="{{ url_for('api.export_csv', id=lifeplan.id) }}">CSV形式</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('api.export_json', id=lifeplan.id) }}">JSON形式</a></li>
+        <ul class="dropdown-menu rounded-3 shadow-sm" aria-labelledby="exportDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('api.export_csv', id=lifeplan.id) }}"><i class="fas fa-file-csv me-2"></i>CSV形式</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('api.export_json', id=lifeplan.id) }}"><i class="fas fa-file-code me-2"></i>JSON形式</a></li>
         </ul>
     </div>
 </div>
@@ -83,31 +88,166 @@
                 <h5 class="card-title mb-0">支出情報</h5>
             </div>
             <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-6">住居費</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_housing }}万円/年</dd>
+                {% if lifeplan.expense_values.count() > 0 %}
+                    <!-- 詳細な支出項目がある場合 -->
+                    {% set expenses_data = lifeplan.get_total_expenses() %}
+                    {% set unit = '月' if lifeplan.expense_unit == 'monthly' else '年' %}
                     
-                    <dt class="col-sm-6">生活費</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_living }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">教育費</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_education }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">保険料</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_insurance }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">ローン返済</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_loan }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">娯楽費</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_entertainment }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">交通費</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_transportation }}万円/年</dd>
-                    
-                    <dt class="col-sm-6">合計支出</dt>
-                    <dd class="col-sm-6">{{ lifeplan.expense_housing + lifeplan.expense_living + lifeplan.expense_education + lifeplan.expense_insurance + lifeplan.expense_loan + lifeplan.expense_entertainment + lifeplan.expense_transportation }}万円/年</dd>
-                </dl>
+                    <div class="accordion accordion-flush" id="expenseAccordion">
+                        {% for category_name, total in expenses_data.by_category.items() %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="expense-heading-{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#expense-collapse-{{ loop.index }}" aria-expanded="false" aria-controls="expense-collapse-{{ loop.index }}">
+                                    <span class="me-auto">{{ category_name }}</span>
+                                    <span class="badge bg-success ms-2">{{ total }}万円/{{ unit }}</span>
+                                </button>
+                            </h2>
+                            <div id="expense-collapse-{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="expense-heading-{{ loop.index }}" data-bs-parent="#expenseAccordion">
+                                <div class="accordion-body p-2">
+                                    {% for expense_value in lifeplan.expense_values %}
+                                        {% if expense_value.item.category.name == category_name and expense_value.amount > 0 %}
+                                            <div class="d-flex justify-content-between align-items-center small border-bottom py-1">
+                                                <span>{{ expense_value.item.name }}</span>
+                                                <span class="text-success">{{ expense_value.amount }}万円/{{ unit }}</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <strong>合計支出</strong>
+                        <strong class="text-success">{{ expenses_data.total }}万円/{{ unit }}</strong>
+                    </div>
+                {% else %}
+                    <!-- 従来の支出項目 -->
+                    <dl class="row">
+                        {% set unit = '月' if lifeplan.expense_unit == 'monthly' else '年' %}
+                        {% set factor = 12 if lifeplan.expense_unit == 'monthly' else 1 %}
+                        {% set annual_note = '（月間入力値の12倍）' if lifeplan.expense_unit == 'monthly' else '' %}
+                        
+                        <dt class="col-sm-6">住居費</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_housing }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">生活費</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_living }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">教育費</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_education }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">保険料</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_insurance }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">ローン返済</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_loan }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">娯楽費</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_entertainment }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">交通費</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_transportation }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">入力単位での合計支出</dt>
+                        <dd class="col-sm-6">{{ lifeplan.expense_housing + lifeplan.expense_living + lifeplan.expense_education + lifeplan.expense_insurance + lifeplan.expense_loan + lifeplan.expense_entertainment + lifeplan.expense_transportation }}万円/{{ unit }}</dd>
+                        
+                        <dt class="col-sm-6">シミュレーション用年間換算</dt>
+                        <dd class="col-sm-6">{{ (lifeplan.expense_housing + lifeplan.expense_living + lifeplan.expense_education + lifeplan.expense_insurance + lifeplan.expense_loan + lifeplan.expense_entertainment + lifeplan.expense_transportation) * factor }}万円/年 <small class="text-muted">{{ annual_note }}</small></dd>
+                    </dl>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">子供と教育費情報</h5>
+            </div>
+            <div class="card-body">
+                {% if lifeplan.children.count() > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>名前</th>
+                                <th>誕生年</th>
+                                <th>現在の年齢</th>
+                                <th>教育段階</th>
+                                <th>教育費</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for child in lifeplan.children %}
+                            {% set age = current_year - child.birth_year %}
+                            {% set education_level = child.get_current_education_level(current_year) %}
+                            
+                            {% set cost = 0 %}
+                            {% if education_level %}
+                                {% set selection = child.education_selections.filter_by(education_type=education_level).first() %}
+                                {% if selection %}
+                                    {% if education_level == '大学' %}
+                                        {% set cost_obj = selection.lifeplan.query.session.query(EducationCost).filter_by(
+                                            education_type=education_level,
+                                            institution_type=selection.institution_type,
+                                            academic_field=selection.academic_field
+                                        ).first() %}
+                                    {% else %}
+                                        {% set cost_obj = selection.lifeplan.query.session.query(EducationCost).filter_by(
+                                            education_type=education_level,
+                                            institution_type=selection.institution_type
+                                        ).first() %}
+                                    {% endif %}
+                                    
+                                    {% if cost_obj %}
+                                        {% set cost = cost_obj.annual_cost %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            
+                            <tr>
+                                <td>{{ child.name }}</td>
+                                <td>{{ child.birth_year }}年</td>
+                                <td>{{ age }}歳</td>
+                                <td>
+                                    {% if education_level %}
+                                        {{ education_level }}
+                                        {% set selection = child.education_selections.filter_by(education_type=education_level).first() %}
+                                        {% if selection %}
+                                            （{{ selection.institution_type }}
+                                            {% if selection.academic_field %}
+                                                {{ selection.academic_field }}
+                                            {% endif %}
+                                            ）
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if cost > 0 %}
+                                        <span class="text-danger">{{ cost }}万円/年</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    子供の情報がありません。ライフプランを編集して子供の情報を設定してください。
+                </div>
+                {% endif %}
+                <div class="alert alert-warning mt-3">
+                    <p class="mb-0"><i class="fas fa-info-circle"></i> 子供の年齢に応じて教育費用が自動的に計算されます。「教育費用設定」で各教育段階の費用を設定できます。</p>
+                </div>
             </div>
         </div>
     </div>
@@ -173,8 +313,34 @@
             </div>
             <div class="card-body">
                 <div class="mb-4">
-                    <canvas id="balanceChart" width="400" height="200"></canvas>
+                    <div id="chart-container" style="position: relative;">
+                        <canvas id="balanceChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="text-muted"><i class="fas fa-expand-alt"></i> タップ/クリックで拡大</small>
+                    </div>
                 </div>
+                
+                <!-- 拡大モーダル -->
+                <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="chartModalLabel">シミュレーション結果詳細</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <canvas id="modalBalanceChart" width="800" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if lifeplan.expense_unit == 'monthly' %}
+                <div class="alert alert-info">
+                    <p><i class="fas fa-info-circle"></i> 支出を月間単位で入力した場合、シミュレーション計算では自動的に12倍して年間支出として計算されます。</p>
+                </div>
+                {% endif %}
                 
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
@@ -194,11 +360,11 @@
                             <tr class="{{ 'table-danger' if r.balance < 0 else '' }}">
                                 <td>{{ r.year }}年</td>
                                 <td>{{ r.age }}歳</td>
-                                <td>{{ r.income }}万円</td>
-                                <td>{{ r.expenses }}万円</td>
+                                <td>{{ r.income }}万円/年</td>
+                                <td>{{ r.expenses }}万円/年</td>
                                 <td>{{ r.savings }}万円</td>
                                 <td>{{ r.investments }}万円</td>
-                                <td class="{{ 'text-danger' if r.balance < 0 else 'text-success' }}">{{ r.balance }}万円</td>
+                                <td class="{{ 'text-danger' if r.balance < 0 else 'text-success' }}">{{ r.balance }}万円/年</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -216,9 +382,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // チャートデータをJSONから取得
     const chartData = {{ chart_data|safe }};
     
-    // 貯蓄残高推移グラフ
-    const balanceCtx = document.getElementById('balanceChart').getContext('2d');
-    new Chart(balanceCtx, {
+    // チャート設定
+    const chartConfig = {
         type: 'line',
         data: {
             labels: chartData.years,
@@ -292,6 +457,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+    };
+    
+    // メインチャート
+    const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+    const balanceChart = new Chart(balanceCtx, chartConfig);
+    
+    // チャートコンテナをクリックしたときの処理
+    document.getElementById('chart-container').addEventListener('click', function() {
+        // モーダルを表示
+        const chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
+        chartModal.show();
+        
+        // モーダルが表示されたらモーダル内のチャートを描画
+        document.getElementById('chartModal').addEventListener('shown.bs.modal', function() {
+            // モーダル内のチャート設定（サイズを大きくしてフォントサイズも大きく）
+            const modalChartConfig = JSON.parse(JSON.stringify(chartConfig)); // クローン
+            modalChartConfig.options.plugins.title.font = {
+                size: 18
+            };
+            modalChartConfig.options.scales.y.title.font = {
+                size: 14
+            };
+            modalChartConfig.options.scales.y1.title.font = {
+                size: 14
+            };
+            modalChartConfig.options.scales.x.title.font = {
+                size: 14
+            };
+            
+            // モーダル内のチャート描画
+            const modalBalanceCtx = document.getElementById('modalBalanceChart').getContext('2d');
+            if (window.modalBalanceChart) {
+                window.modalBalanceChart.destroy();
+            }
+            window.modalBalanceChart = new Chart(modalBalanceCtx, modalChartConfig);
+        }, { once: true });
     });
 });
 </script>

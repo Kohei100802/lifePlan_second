@@ -127,11 +127,52 @@
             <h5 class="card-title mb-0">支出情報</h5>
         </div>
         <div class="card-body">
-            <div class="row">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    {{ form.expense_unit.label(class="form-label") }}
+                    {{ form.expense_unit(class="form-select", id="expense_unit") }}
+                    <small class="form-text text-muted">支出金額の単位を選択してください</small>
+                </div>
+            </div>
+
+            <!-- 詳細な支出項目（カテゴリ別） -->
+            <div class="accordion" id="expenseAccordion">
+                {% for category_name, items in form.expense_items.items() %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                            {{ category_name }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse show" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#expenseAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                {% for item_id, item_name, field in items %}
+                                <div class="col-md-3 mb-3">
+                                    {{ field.label(class="form-label") }}
+                                    {{ field(class="form-control expense-item") }}
+                                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の{{ item_name }}</small>
+                                    {% for error in field.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- 従来の支出項目（表示のみ） -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h6 class="text-muted">従来の支出項目（後方互換性のため）</h6>
+                </div>
                 <div class="col-md-3 mb-3">
                     {{ form.expense_housing.label(class="form-label") }}
                     {{ form.expense_housing(class="form-control") }}
-                    <small class="form-text text-muted">年間の住居費</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の住居費</small>
                     {% for error in form.expense_housing.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -139,7 +180,7 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_living.label(class="form-label") }}
                     {{ form.expense_living(class="form-control") }}
-                    <small class="form-text text-muted">年間の生活費</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の生活費</small>
                     {% for error in form.expense_living.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -147,7 +188,7 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_education.label(class="form-label") }}
                     {{ form.expense_education(class="form-control") }}
-                    <small class="form-text text-muted">年間の教育費</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の教育費</small>
                     {% for error in form.expense_education.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -155,7 +196,7 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_insurance.label(class="form-label") }}
                     {{ form.expense_insurance(class="form-control") }}
-                    <small class="form-text text-muted">年間の保険料</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の保険料</small>
                     {% for error in form.expense_insurance.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -163,7 +204,7 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_loan.label(class="form-label") }}
                     {{ form.expense_loan(class="form-control") }}
-                    <small class="form-text text-muted">年間のローン返済額</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">のローン返済額</small>
                     {% for error in form.expense_loan.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -171,7 +212,7 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_entertainment.label(class="form-label") }}
                     {{ form.expense_entertainment(class="form-control") }}
-                    <small class="form-text text-muted">年間の娯楽費</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の娯楽費</small>
                     {% for error in form.expense_entertainment.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
@@ -179,10 +220,196 @@
                 <div class="col-md-3 mb-3">
                     {{ form.expense_transportation.label(class="form-label") }}
                     {{ form.expense_transportation(class="form-control") }}
-                    <small class="form-text text-muted">年間の交通費</small>
+                    <small class="form-text text-muted expense-period">年間</small><small class="form-text text-muted">の交通費</small>
                     {% for error in form.expense_transportation.errors %}
                         <span class="text-danger">{{ error }}</span>
                     {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 教育費用設定 -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">教育費用設定</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">お子様の教育に関する費用設定を行います。学校の種類と国公立/私立を選択してください。</p>
+            
+            <div id="education-settings">
+                <!-- 教育費用選択のテンプレート -->
+                <div id="education-template" class="row mb-3 d-none">
+                    <!-- 子供選択部分は JavaScript で動的に追加されます -->
+                    <div class="col-md-2">
+                        <label class="form-label">教育段階</label>
+                        <select class="form-select education-type" name="education_type">
+                            <option value="幼稚園">幼稚園</option>
+                            <option value="小学校">小学校</option>
+                            <option value="中学校">中学校</option>
+                            <option value="高校">高校</option>
+                            <option value="大学">大学</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">学校タイプ</label>
+                        <select class="form-select institution-type" name="institution_type">
+                            <option value="国公立">国公立</option>
+                            <option value="私立">私立</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 academic-field-container" style="display:none;">
+                        <label class="form-label">専攻分野</label>
+                        <select class="form-select academic-field" name="academic_field">
+                            <option value="文系">文系</option>
+                            <option value="理系">理系</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">年間費用</label>
+                        <span class="education-cost badge bg-primary">- 万円/年</span>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-sm remove-education form-control"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                
+                <!-- 既存の教育費用選択 -->
+                {% for selection in education_selections %}
+                {% set index = loop.index0 %}
+                <div class="row mb-3 education-row">
+                    <div class="col-md-3">
+                        <label class="form-label">お子様</label>
+                        <select class="form-select education-child-select" name="education-child-select-{{ index }}">
+                            {% for child_info in children_with_education %}
+                            <option value="{{ child_info.child.id }}" {% if selection.child_id == child_info.child.id %}selected{% endif %}>
+                                {{ child_info.child.name }} ({{ child_info.child.birth_year }}年生)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">教育段階</label>
+                        <select class="form-select education-type" name="education-0-{{ index }}-education_type">
+                            <option value="幼稚園" {% if selection.education_type == '幼稚園' %}selected{% endif %}>幼稚園</option>
+                            <option value="小学校" {% if selection.education_type == '小学校' %}selected{% endif %}>小学校</option>
+                            <option value="中学校" {% if selection.education_type == '中学校' %}selected{% endif %}>中学校</option>
+                            <option value="高校" {% if selection.education_type == '高校' %}selected{% endif %}>高校</option>
+                            <option value="大学" {% if selection.education_type == '大学' %}selected{% endif %}>大学</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">学校タイプ</label>
+                        <select class="form-select institution-type" name="education-0-{{ index }}-institution_type">
+                            <option value="国公立" {% if selection.institution_type == '国公立' %}selected{% endif %}>国公立</option>
+                            <option value="私立" {% if selection.institution_type == '私立' %}selected{% endif %}>私立</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 academic-field-container" {% if selection.education_type != '大学' %}style="display:none;"{% endif %}>
+                        <label class="form-label">専攻分野</label>
+                        <select class="form-select academic-field" name="education-0-{{ index }}-academic_field">
+                            <option value="文系" {% if selection.academic_field == '文系' %}selected{% endif %}>文系</option>
+                            <option value="理系" {% if selection.academic_field == '理系' %}selected{% endif %}>理系</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">年間費用</label>
+                        <span class="education-cost badge bg-primary">- 万円/年</span>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-danger btn-sm remove-education form-control"><i class="fas fa-times"></i></button>
+                    </div>
+                    
+                    <input type="hidden" name="education-0-{{ index }}-child_id" value="{{ selection.child_id }}" class="selected-child-id">
+                    
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const childSelect = document.querySelector('select[name="education-child-select-{{ index }}"]');
+                            const childIdInput = childSelect.closest('.education-row').querySelector('.selected-child-id');
+                            
+                            childSelect.addEventListener('change', function() {
+                                childIdInput.value = this.value;
+                            });
+                        });
+                    </script>
+                </div>
+                {% endfor %}
+                
+                <!-- 子供情報の編集フォーム -->
+                <div class="row mt-3 mb-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">お子様情報</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="children-container">
+                                    {% for child_info in children_with_education %}
+                                    <div class="row mb-3 child-row">
+                                        <div class="col-md-1">
+                                            <label class="form-label">お子様 #{{ loop.index }}</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">名前</label>
+                                            <input type="text" class="form-control" name="child-{{ loop.index0 }}-name" value="{{ child_info.child.name }}">
+                                            <input type="hidden" name="child-{{ loop.index0 }}-id" value="{{ child_info.child.id }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">誕生年 (西暦)</label>
+                                            <input type="number" class="form-control" name="child-{{ loop.index0 }}-birth_year" value="{{ child_info.child.birth_year }}">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-danger form-control remove-child" data-child-id="{{ child_info.child.id }}">削除</button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- 子供追加ボタン -->
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button type="button" id="add-child" class="btn btn-success btn-sm">
+                                            <i class="fas fa-plus"></i> お子様を追加
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 子供追加用テンプレート -->
+                                <div id="child-template" class="row mb-3 child-row d-none">
+                                    <div class="col-md-1">
+                                        <label class="form-label">お子様 #<span class="child-index"></span></label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">名前</label>
+                                        <input type="text" class="form-control child-name" name="child-template-name" value="お子様">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">誕生年 (西暦)</label>
+                                        <input type="number" class="form-control child-birth-year" name="child-template-birth_year">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">&nbsp;</label>
+                                        <button type="button" class="btn btn-danger form-control remove-child">削除</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <p class="text-muted small">※ 子供の年齢に応じた教育費用が自動的に計算されます。「従来の支出項目」の教育費は使用されません。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="button" id="add-education" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> 教育費用を追加
+                    </button>
                 </div>
             </div>
         </div>

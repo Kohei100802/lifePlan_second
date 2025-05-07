@@ -1,104 +1,162 @@
 /* メインスタイル */
 body {
-    padding-bottom: 20px;
-    background-color: #f8f9fa;
-}
-
-.footer {
-    background-color: #f5f5f5;
-    padding: 1.5rem 0;
-    color: #6c757d;
-    border-top: 1px solid #dee2e6;
+    padding-bottom: 80px; /* モバイルナビのスペース確保 */
+    background-color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #333;
+    line-height: 1.6;
 }
 
 /* カードスタイル */
 .card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    border: none;
     margin-bottom: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
-    border-top-left-radius: 0.5rem !important;
-    border-top-right-radius: 0.5rem !important;
-    font-weight: 500;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    font-weight: 700;
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
 }
 
 /* ボタンスタイル */
 .btn {
-    border-radius: 0.25rem;
+    border-radius: 8px;
     font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: #4361ee;
+    border-color: #4361ee;
+}
+
+.btn-success {
+    background-color: #38b000;
+    border-color: #38b000;
+}
+
+.btn-info {
+    background-color: #3a86ff;
+    border-color: #3a86ff;
+    color: white;
 }
 
 /* フォームスタイル */
-.form-control {
-    border-radius: 0.25rem;
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
 }
 
 .form-label {
     font-weight: 500;
     margin-bottom: 0.5rem;
+    color: #555;
 }
 
 /* テーブルスタイル */
 .table {
-    border-radius: 0.5rem;
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+.table th {
+    font-weight: 700;
 }
 
 /* ナビゲーションバー */
 .navbar {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 1rem;
+    background-color: white !important;
 }
 
-/* ジャンボトロン */
-.jumbotron {
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    padding: 2rem 1rem;
-    margin-bottom: 2rem;
+.navbar-brand {
+    font-weight: 700;
+    color: #4361ee !important;
 }
 
-/* ライフプラン表示用スタイル */
-.lifeplan-info dl dt {
-    font-weight: 500;
+/* メトリックカード */
+.metric-card {
+    text-align: center;
+    padding: 1.5rem;
 }
 
-/* ライフイベント表示用スタイル */
-.life-event-item {
-    border-left: 4px solid #007bff;
-    padding-left: 1rem;
-    margin-bottom: 1rem;
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    color: #4361ee;
 }
 
-/* グラフコンテナ */
-.chart-container {
-    position: relative;
-    margin: auto;
-    height: 50vh;
-    width: 100%;
+.metric-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* アラート */
 .alert {
-    border-radius: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    padding: 1rem 1.25rem;
 }
 
 /* リンク */
 a {
     text-decoration: none;
+    color: #4361ee;
+    transition: color 0.2s;
 }
 
 a:hover {
-    text-decoration: underline;
+    color: #3347c1;
+    text-decoration: none;
 }
 
 /* ヘッダー */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 500;
+    font-weight: 700;
     color: #333;
+    margin-bottom: 1rem;
+}
+
+header h1 {
+    color: #4361ee;
 }
 
 /* プリローダー */
@@ -108,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.92);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -118,4 +176,107 @@ h1, h2, h3, h4, h5, h6 {
 .loading-spinner {
     width: 3rem;
     height: 3rem;
+    color: #4361ee;
+}
+
+/* モバイルナビゲーション */
+.fixed-bottom {
+    z-index: 1030;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.fixed-bottom a {
+    padding: 0.5rem 0;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.fixed-bottom a:hover, .fixed-bottom a.active {
+    color: #4361ee;
+}
+
+.fixed-bottom i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* アコーディオン */
+.accordion-button:not(.collapsed) {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+    font-weight: 500;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+/* バッジ */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* チャートコンテナ */
+#chart-container {
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#chart-container:hover {
+    transform: scale(1.01);
+}
+
+/* モーダル */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+/* デバイダー */
+hr {
+    margin: 2rem 0;
+    opacity: 0.15;
+}
+
+/* ファクトカード */
+.fact-card {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #4361ee;
+}
+
+.fact-card-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #4361ee;
+}
+
+.fact-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* ユーティリティ */
+.shadow-sm {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.shadow-md {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.rounded-3 {
+    border-radius: 8px !important;
 }
