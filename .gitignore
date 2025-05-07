@@ -1,1 +1,32 @@
-**/.claude/settings.local.json
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+venv/
+ENV/
+env/
+instance/
+.pytest_cache/
+
+# データベース
+*.db
+*.sqlite
+*.sqlite3
+
+# Mac OS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ログファイル
+*.log
+logs/
+
+# 大きなバイナリファイル
+*.zip
+*.gz
+*.tar
+*.tgz
